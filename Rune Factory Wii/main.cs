@@ -17,14 +17,30 @@ namespace Rune_Factory_Wii
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
+        OpenFileDialog opf = new OpenFileDialog();
 
+        private void btnUnpack_Click(object sender, EventArgs e)
+        {
+            opf.Filter = "RUNEFACTORY RFF2|*.bin";
+            if(opf.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrEmpty(opf.FileName))
+                {
+
+                }
+            }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnCooked_Click(object sender, EventArgs e)
         {
+            opf.Filter = "File Dir Extract|*.FileDir";
+            if (opf.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrEmpty(opf.FileName))
+                {
 
+                }
+            }
         }
     }
 }
