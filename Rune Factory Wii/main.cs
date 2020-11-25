@@ -89,11 +89,49 @@ namespace Rune_Factory_Wii
             {
                 if (File.Exists("dir.txt"))
                 {
-
+                    try
+                    {
+                        string[] dirdata = File.ReadAllLines("dir.txt");
+                        var split = dirdata[idS].Split(':');
+                        if (!Directory.Exists(outdir))
+                            Directory.CreateDirectory(outdir);
+                        string outFile = outdir + "\\" + split[1];
+                        if (!Directory.Exists(Path.GetDirectoryName(outFile)))
+                            Directory.CreateDirectory(Path.GetDirectoryName(outFile));
+                        BinaryWriter wt = new BinaryWriter(File.Create(outFile));
+                        fileDir.WriteLine(outFile);
+                        reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+                        byte[] buffer = reader.ReadBytes((int)size);
+                        wt.Write(buffer);
+                        wt.Flush();
+                        wt.Close();
+                    }
+                    catch
+                    {
+                        if (!Directory.Exists(outdir))
+                            Directory.CreateDirectory(outdir);
+                        string outFile = outdir + "\\" + idS.ToString() + ".dat";
+                        BinaryWriter wt = new BinaryWriter(File.Create(outFile));
+                        fileDir.WriteLine(outFile);
+                        reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+                        byte[] buffer = reader.ReadBytes((int)size);
+                        wt.Write(buffer);
+                        wt.Flush();
+                        wt.Close();
+                    }
                 }
                 else
                 {
-
+                    if (!Directory.Exists(outdir))
+                        Directory.CreateDirectory(outdir);
+                    string outFile = outdir + "\\" + idS.ToString() + ".dat";
+                    BinaryWriter wt = new BinaryWriter(File.Create(outFile));
+                    fileDir.WriteLine(outFile);
+                    reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+                    byte[] buffer = reader.ReadBytes((int)size);
+                    wt.Write(buffer);
+                    wt.Flush();
+                    wt.Close();
                 }
             }
         }
