@@ -76,7 +76,7 @@ namespace Rune_Factory_Wii
             {
                 if(!Directory.Exists(outdir))
                     Directory.CreateDirectory(outdir);
-                string outFile = outdir + "\\" + idS.ToString() + ".dat";
+                string outFile = outdir + @"\" + idS.ToString() + ".dat";
                 BinaryWriter wt = new BinaryWriter(File.Create(outFile));
                 fileDir.WriteLine(outFile);
                 reader.BaseStream.Seek(offset, SeekOrigin.Begin);
@@ -95,7 +95,7 @@ namespace Rune_Factory_Wii
                         var split = dirdata[idS].Split(':');
                         if (!Directory.Exists(outdir))
                             Directory.CreateDirectory(outdir);
-                        string outFile = outdir + "\\" + split[1];
+                        string outFile = outdir + @"\" + split[1];
                         if (!Directory.Exists(Path.GetDirectoryName(outFile)))
                             Directory.CreateDirectory(Path.GetDirectoryName(outFile));
                         BinaryWriter wt = new BinaryWriter(File.Create(outFile));
@@ -110,7 +110,7 @@ namespace Rune_Factory_Wii
                     {
                         if (!Directory.Exists(outdir))
                             Directory.CreateDirectory(outdir);
-                        string outFile = outdir + "\\" + idS.ToString() + ".dat";
+                        string outFile = outdir + @"\" + idS.ToString() + ".dat";
                         BinaryWriter wt = new BinaryWriter(File.Create(outFile));
                         fileDir.WriteLine(outFile);
                         reader.BaseStream.Seek(offset, SeekOrigin.Begin);
@@ -124,7 +124,7 @@ namespace Rune_Factory_Wii
                 {
                     if (!Directory.Exists(outdir))
                         Directory.CreateDirectory(outdir);
-                    string outFile = outdir + "\\" + idS.ToString() + ".dat";
+                    string outFile = outdir + @"\" + idS.ToString() + ".dat";
                     BinaryWriter wt = new BinaryWriter(File.Create(outFile));
                     fileDir.WriteLine(outFile);
                     reader.BaseStream.Seek(offset, SeekOrigin.Begin);
