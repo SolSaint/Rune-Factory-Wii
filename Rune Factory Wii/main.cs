@@ -38,7 +38,7 @@ namespace Rune_Factory_Wii
                         {
                             long size = BEReadInt64(rd.ReadBytes(8));
                             long offset = BEReadInt64(rd.ReadBytes(8));
-                            LogFile(new BinaryReader(File.OpenRead(Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + ".dat")), fileDir, Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + "_unk\\", offset, size, i, ctDir.Checked);
+                            LogFile(new BinaryReader(File.OpenRead(Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + ".dat")), fileDir, Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + "_unk", offset, size, i, ctDir.Checked);
                         }
                         fileDir.Close();
                     }
@@ -76,7 +76,7 @@ namespace Rune_Factory_Wii
             {
                 if(!Directory.Exists(outdir))
                     Directory.CreateDirectory(outdir);
-                string outFile = outdir + @"\" + idS.ToString() + ".dat";
+                string outFile = outdir + "\\" + idS.ToString() + ".dat";
                 BinaryWriter wt = new BinaryWriter(File.Create(outFile));
                 fileDir.WriteLine(outFile);
                 reader.BaseStream.Seek(offset, SeekOrigin.Begin);
@@ -92,10 +92,9 @@ namespace Rune_Factory_Wii
                     try
                     {
                         string[] dirdata = File.ReadAllLines("dir.txt");
-                        var split = dirdata[idS].Split(':');
                         if (!Directory.Exists(outdir))
                             Directory.CreateDirectory(outdir);
-                        string outFile = outdir + @"\" + split[1];
+                        string outFile = outdir + "\\" + dirdata[idS];
                         if (!Directory.Exists(Path.GetDirectoryName(outFile)))
                             Directory.CreateDirectory(Path.GetDirectoryName(outFile));
                         BinaryWriter wt = new BinaryWriter(File.Create(outFile));
@@ -110,7 +109,7 @@ namespace Rune_Factory_Wii
                     {
                         if (!Directory.Exists(outdir))
                             Directory.CreateDirectory(outdir);
-                        string outFile = outdir + @"\" + idS.ToString() + ".dat";
+                        string outFile = outdir + "\\" + idS.ToString() + ".dat";
                         BinaryWriter wt = new BinaryWriter(File.Create(outFile));
                         fileDir.WriteLine(outFile);
                         reader.BaseStream.Seek(offset, SeekOrigin.Begin);
@@ -124,7 +123,7 @@ namespace Rune_Factory_Wii
                 {
                     if (!Directory.Exists(outdir))
                         Directory.CreateDirectory(outdir);
-                    string outFile = outdir + @"\" + idS.ToString() + ".dat";
+                    string outFile = outdir + "\\" + idS.ToString() + ".dat";
                     BinaryWriter wt = new BinaryWriter(File.Create(outFile));
                     fileDir.WriteLine(outFile);
                     reader.BaseStream.Seek(offset, SeekOrigin.Begin);
