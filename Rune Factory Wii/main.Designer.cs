@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(main));
             this.btnUnpack = new System.Windows.Forms.Button();
             this.btnCooked = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.ctDir = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnUnpack
@@ -56,18 +56,18 @@
             this.btnCooked.UseVisualStyleBackColor = true;
             this.btnCooked.Click += new System.EventHandler(this.btnCooked_Click);
             // 
-            // checkBox1
+            // ctDir
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.BackColor = System.Drawing.Color.Transparent;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.ForeColor = System.Drawing.Color.Black;
-            this.checkBox1.Location = new System.Drawing.Point(5, 4);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(148, 24);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Use custom dir";
-            this.checkBox1.UseVisualStyleBackColor = false;
+            this.ctDir.AutoSize = true;
+            this.ctDir.BackColor = System.Drawing.Color.Transparent;
+            this.ctDir.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ctDir.ForeColor = System.Drawing.Color.Black;
+            this.ctDir.Location = new System.Drawing.Point(5, 4);
+            this.ctDir.Name = "ctDir";
+            this.ctDir.Size = new System.Drawing.Size(148, 24);
+            this.ctDir.TabIndex = 2;
+            this.ctDir.Text = "Use custom dir";
+            this.ctDir.UseVisualStyleBackColor = false;
             // 
             // main
             // 
@@ -76,7 +76,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(302, 415);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.ctDir);
             this.Controls.Add(this.btnCooked);
             this.Controls.Add(this.btnUnpack);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -95,7 +95,7 @@
 
         private System.Windows.Forms.Button btnUnpack;
         private System.Windows.Forms.Button btnCooked;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox ctDir;
     }
 }
 
