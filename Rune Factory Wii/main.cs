@@ -53,7 +53,35 @@ namespace Rune_Factory_Wii
             {
                 if (!string.IsNullOrEmpty(opf.FileName))
                 {
-
+                    string binFile = Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + ".bin_bk";
+                    string datFile = Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + ".dat_bk";
+                    if (!File.Exists(binFile) && !File.Exists(datFile))
+                    {
+                        File.Copy(Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + ".bin", binFile, true);
+                        File.Copy(Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + ".dat", datFile, true);
+                    }
+                    string[] dirs = File.ReadAllLines(opf.FileName);
+                    BinaryWriter wtBin = new BinaryWriter(File.OpenWrite(Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + ".bin"));
+                    BinaryWriter wtDat = new BinaryWriter(File.Create(Path.GetDirectoryName(opf.FileName) + "\\" + Path.GetFileNameWithoutExtension(opf.FileName) + ".dat"));
+                    wtBin.BaseStream.Seek(52, SeekOrigin.Begin);
+                    foreach (string dir in dirs)
+                    {
+                        byte[] data = File.ReadAllBytes(dir);
+                        wtBin.Write(BEReadInt64(BitConverter.GetBytes((long)data.Length)));
+                        long offset = wtDat.BaseStream.Position;
+                        wtBin.Write(BEReadInt64(BitConverter.GetBytes(offset)));
+                        wtDat.Write(data);
+                        wtDat.BaseStream.Seek(1000, SeekOrigin.Current);
+                        for(int i = 0; i < 16; i++)
+                        {
+                            if (wtDat.BaseStream.Position % 16 != 0)
+                                wtDat.BaseStream.Seek(1, SeekOrigin.Current);
+                            else
+                                break;
+                        }
+                    }
+                    wtBin.Close();
+                    wtDat.Close();
                 }
             }
         }
