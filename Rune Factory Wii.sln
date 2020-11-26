@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rune Factory Wii", "Rune Fa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Texture Convert", "Texture Convert\Texture Convert.csproj", "{20629104-96C4-4B3E-8FC0-87C15EC441B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Text Packet", "Text Packet\Text Packet.csproj", "{D7130EF9-B67B-4FCC-AA6D-3A9274DC440E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{20629104-96C4-4B3E-8FC0-87C15EC441B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20629104-96C4-4B3E-8FC0-87C15EC441B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20629104-96C4-4B3E-8FC0-87C15EC441B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7130EF9-B67B-4FCC-AA6D-3A9274DC440E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7130EF9-B67B-4FCC-AA6D-3A9274DC440E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7130EF9-B67B-4FCC-AA6D-3A9274DC440E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7130EF9-B67B-4FCC-AA6D-3A9274DC440E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
