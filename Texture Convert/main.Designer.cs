@@ -1,6 +1,6 @@
-﻿namespace Text_Packet
+﻿namespace Texture_Convert
 {
-    partial class Form1
+    partial class main
     {
         /// <summary>
         /// Required designer variable.
