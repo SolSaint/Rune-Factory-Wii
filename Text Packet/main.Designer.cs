@@ -47,11 +47,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(61, 87);
+            this.label1.Location = new System.Drawing.Point(49, 87);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(150, 26);
+            this.label1.Size = new System.Drawing.Size(171, 26);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Choice file script.bin or text.bin\r\n               file text *.txt";
+            this.label1.Text = "Choice file script.bin or text_dat.bin\r\n    file size table *.FileSizeTable";
             // 
             // main
             // 
