@@ -144,11 +144,11 @@ namespace Text_Packet
                 Copy(dir + "\\" + filename + ".bin", dir + "\\" + filename + ".bin_bk");
                 Console.WriteLine("Backup file {0}...Successfully", dir + "\\" + filename + ".dat");
             }
-            var wtmain = new BinaryWriter(new FileStream(dir + "\\" + filename + ".bin", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite));
             var dump = new BinaryWriter(File.Create("dump.temp"));
+            var wtmain = new BinaryWriter(new FileStream(dir + "\\" + filename + ".bin", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite));
             wtmain.Write(new byte[]{ 0xfe, 0xfe});
             wtmain.Write(WriteInt16BE(1));
-            wtmain.Write(WriteInt16BE(16));
+            wtmain.Write(WriteInt32BE(16));
             wtmain.BaseStream.Seek(16, SeekOrigin.Begin);
             wtmain.Write(new byte[] { 0xfe, 0xfe });
             wtmain.Write(WriteInt16BE((short)(lines.Length - 1)));
@@ -163,6 +163,7 @@ namespace Text_Packet
                         Console.WriteLine("Backup file {0}...Successfully", Path.GetFileName(lines[i]));
                     }
                     var wt = new BinaryWriter(new FileStream(lines[i], FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite));
+                    //var rd = new BinaryReaderBE(new FileStream(lines[i] + "_bk", FileMode.Open, FileAccess.Read, FileShare.Read));
                     string[] text_file = File.ReadAllLines(Path.GetDirectoryName(lines[i]) + "\\" + Path.GetFileNameWithoutExtension(lines[i]) + ".txt");
                     List<int> offset = new List<int>();
                     wt.BaseStream.Seek(text_file.Length * 4, SeekOrigin.Begin);
@@ -209,9 +210,9 @@ namespace Text_Packet
                 }
             }
             dump.Close();
-            var rd = new BinaryReader(File.OpenRead("dump.temp"));
-            wtmain.Write(rd.ReadBytes((int)rd.BaseStream.Length));
-            rd.Close();
+            var rdd = new BinaryReader(File.OpenRead("dump.temp"));
+            wtmain.Write(rdd.ReadBytes((int)rdd.BaseStream.Length));
+            rdd.Close();
             File.Delete("dump.temp");
             SkipWriter(wtmain);
             long enddat = wtmain.BaseStream.Position;
@@ -241,6 +242,7 @@ namespace Text_Packet
                 {
                     fileStream.Write(bytes, 0, bytesRead);
                 }
+                fs.Close();
             }
         }
 
