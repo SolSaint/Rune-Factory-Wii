@@ -214,6 +214,9 @@ namespace Text_Packet
             rd.Close();
             File.Delete("dump.temp");
             SkipWriter(wtmain);
+            long enddat = wtmain.BaseStream.Position;
+            wtmain.BaseStream.Seek(8, SeekOrigin.Begin);
+            wtmain.Write(WriteInt64BE(enddat - 16));
             wtmain.Close();
             Console.WriteLine("\n***********************************\n*Pack Done!!. Continue............*\n***********************************");
         }
