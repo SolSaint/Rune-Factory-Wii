@@ -133,7 +133,85 @@ namespace Text_Packet
         ////script.bin
         public void Script_Text(BinaryReader rd, string filename, string dir)
         {
-
+            StreamWriter wtFs = new StreamWriter(dir + "\\" + filename + ".FileSizeTable");
+            wtFs.WriteLine("var=1");
+            if (!Directory.Exists(dir + "\\" + filename))
+                Directory.CreateDirectory(dir + "\\" + filename);
+            rd.BaseStream.Seek(0, SeekOrigin.Begin);
+            long len = rd.ReadInt64();
+            rd.BaseStream.Seek(len - 16, SeekOrigin.Begin);
+            int count = rd.ReadInt32();
+            rd.BaseStream.Seek(len, SeekOrigin.Begin);
+            List<int[]> offset = new List<int[]>();
+            for (int i = 0; i < count; i++)
+            {
+                int[] info = new int[3];
+                if(i == 1)
+                {
+                    info[0] = rd.ReadInt32();
+                    rd.BaseStream.Seek(16, SeekOrigin.Begin);
+                    info[1] = rd.ReadInt32();
+                    info[2] = rd.ReadInt32();
+                }
+                else
+                {
+                    info[0] = rd.ReadInt32();
+                    info[1] = rd.ReadInt32();
+                    info[2] = rd.ReadInt32();
+                }
+                offset.Add(info);
+            }
+            for(int i = 0; i < count; i++)
+            {
+                BinaryWriter wt = new BinaryWriter(new FileStream(dir + "\\" + filename + "\\0x" + offset[i][0].ToString("X8") + ".bin", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite));
+                rd.BaseStream.Seek(offset[i][0], SeekOrigin.Begin);
+                wt.Write(rd.ReadBytes((offset[i][2])));
+                wt.Close();
+                wtFs.WriteLine("0x" + offset[i][1].ToString("X8") + " " + dir + "\\" + filename + "\\0x" + offset[i][0].ToString("X8") + ".bin");
+                if(i == 6)
+                {
+                    BinaryReaderBE rdtxt = new BinaryReaderBE(File.OpenRead(dir + "\\" + filename + "\\0x" + offset[i][0].ToString("X8") + ".bin"));
+                    StreamWriter wttxt = new StreamWriter(dir + "\\" + filename + "\\0x" + offset[i][0].ToString("X8") + ".txt");
+                    List<int> bf = new List<int>();
+                    long nx = rdtxt.ReadInt64();
+                    rdtxt.BaseStream.Seek(nx - 16, SeekOrigin.Begin);
+                    int cn = rdtxt.ReadInt32();
+                    rdtxt.BaseStream.Seek(nx, SeekOrigin.Begin);
+                    for (int j = 0; j < cn; j++)
+                    {
+                        if(j == 1)
+                        {
+                            int k = rdtxt.ReadInt32();
+                            bf.Add(k);
+                            rdtxt.ReadInt32();
+                            k = rdtxt.ReadInt32();
+                            bf.Add(k);
+                            rdtxt.BaseStream.Seek(16, SeekOrigin.Begin);
+                        }
+                        else
+                        {
+                            int k = rdtxt.ReadInt32();
+                            bf.Add(k);
+                            rdtxt.ReadInt32();
+                        }
+                    }
+                    bf.Sort();
+                    for (int j = 0; j < cn; j++)
+                    {
+                        rdtxt.BaseStream.Seek(bf[j], SeekOrigin.Begin);
+                        byte[] txt = rdtxt.ReadBytes(bf[j + 1] - bf[j]);
+                        StringBuilder sb = new StringBuilder(Encoding.BigEndianUnicode.GetString(txt));
+                        sb.Replace("\r", "[r]");
+                        sb.Replace("\n", "[n]");
+                        sb.Replace("\0", "[0]");
+                        Console.WriteLine(sb.ToString());
+                        wttxt.WriteLine(sb.ToString());
+                    }
+                    wttxt.Close();
+                    rdtxt.Close();
+                }
+            }
+            wtFs.Close();
         }
 
         ////var=0
