@@ -303,7 +303,124 @@ namespace Text_Packet
         ////var=1
         public void Repack_script(string[] lines, string filename, string dir)
         {
+            if (!File.Exists(dir + "\\" + filename + ".bin_bk"))
+            {
+                Copy(dir + "\\" + filename + ".bin", dir + "\\" + filename + ".bin_bk");
+                Console.WriteLine("Backup file {0}...Successfully", dir + "\\" + filename + ".dat");
+            }
+            var wtmain = new BinaryWriter(new FileStream(dir + "\\" + filename + ".bin", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite));
+            wtmain.BaseStream.Seek(8, SeekOrigin.Begin);
+            wtmain.Write(WriteInt32BE(1));
+            wtmain.Write(WriteInt16BE(0));
+            wtmain.BaseStream.Seek((lines.Length - 1) * 12, SeekOrigin.Begin);
+            List<int[]> off1 = new List<int[]>();
+            for(int i = 0; i < lines.Length; i++)
+            {
+                if(lines[i] != "var=1")
+                {
+                    if (!File.Exists(lines[i].Split(' ')[1] + "_bk") && i == 7)
+                    {
+                        Copy(lines[i].Split(' ')[1], lines[i].Split(' ')[1] + "_bk");
+                        Console.WriteLine("Backup file {0}...Successfully", Path.GetFileName(lines[i].Split(' ')[1]));
+                    }
 
+                    if (i != 7)
+                    {
+                        int[] dk = new int[3];
+                        byte[] all = File.ReadAllBytes(lines[i].Split(' ')[1]);
+                        dk[0] = (int)wtmain.BaseStream.Position;
+                        dk[1] = Convert.ToInt32(lines[i].Split(' ')[0],16);
+                        dk[2] = all.Length;
+                        off1.Add(dk);
+                        wtmain.Write(all);
+                    }
+                    else
+                    {
+                        var wt = new BinaryWriter(new FileStream(lines[i].Split(' ')[1], FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite));
+                        string[] text_file = File.ReadAllLines(Path.GetDirectoryName(lines[i].Split(' ')[1]) + "\\" + Path.GetFileNameWithoutExtension(lines[i].Split(' ')[1]) + ".txt");
+                        List<int> offset = new List<int>();
+                        wt.BaseStream.Seek(text_file.Length * 8, SeekOrigin.Begin);
+                        offset.Add(text_file.Length * 8);
+                        foreach (string line in text_file)
+                        {
+                            Console.WriteLine("Importing....00--->" + line);
+                            StringBuilder sb = new StringBuilder(line);
+                            sb.Replace("[r]", "\r");
+                            sb.Replace("[n]", "\n");
+                            sb.Replace("[0]", "\0");
+                            wt.Write(Encoding.BigEndianUnicode.GetBytes(sb.ToString()));
+                            offset.Add((int)wt.BaseStream.Position);
+                            Console.WriteLine("Successfully!");
+                        }
+                        int end = (int)wt.BaseStream.Position;
+                        wt.Write(WriteInt64BE(text_file.Length));
+                        wt.Write(WriteInt32BE(8));
+                        wt.Write(WriteInt32BE(1));
+                        wt.Write(WriteInt32BE(0));
+                        int end2 = (int)wt.BaseStream.Position;
+                        for (int j = 0; j < text_file.Length; j++)
+                        {
+                            if (j == 2)
+                            {
+                                wt.Write(WriteInt32BE(end));
+                                wt.BaseStream.Seek(0, SeekOrigin.Begin);
+                                wt.Write(WriteInt64BE(end2));
+                                wt.Write(WriteInt32BE(1));
+                                wt.Write(WriteInt32BE(0));
+                                wt.Write(WriteInt32BE(offset[j]));
+                                wt.Write(new byte[] { 0xff, 0xff, 0x00, 0x00 });
+                            }
+                            else if(j < 2)
+                            {
+                                wt.Write(WriteInt32BE(offset[j]));
+                                wt.Write(new byte[] { 0xff, 0xff, 0x00, 0x00 });
+                            }
+                            else
+                            {
+                                var rd = new BinaryReaderBE(new FileStream(lines[i].Split(' ')[1] + "_bk", FileMode.Open, FileAccess.Read, FileShare.Read));
+                                wt.Write(WriteInt32BE(offset[j]));
+                                rd.BaseStream.Seek(wt.BaseStream.Position, SeekOrigin.Begin);
+                                wt.Write(rd.ReadBytes(4));
+                            }
+                        }
+                        wt.Close();
+                        int[] dk = new int[3];
+                        byte[] all = File.ReadAllBytes(lines[i].Split(' ')[1]);
+                        dk[0] = (int)wtmain.BaseStream.Position;
+                        dk[1] = Convert.ToInt32(lines[i].Split(' ')[0], 16);
+                        dk[2] = all.Length;
+                        off1.Add(dk);
+                        wtmain.Write(all);
+                    }
+                }
+            }
+            int end1 = (int)wtmain.BaseStream.Position;
+            wtmain.Write(WriteInt64BE(lines.Length - 1));
+            wtmain.Write(WriteInt32BE(12));
+            wtmain.Write(WriteInt32BE(1));
+            wtmain.Write(WriteInt32BE(0));
+            int end21 = (int)wtmain.BaseStream.Position;
+            for (int j = 0; j < lines.Length - 1; j++)
+            {
+                if (j == 1)
+                {
+                    wtmain.Write(WriteInt32BE(off1[j][0]));
+                    wtmain.Write(WriteInt32BE(end1));
+                    wtmain.BaseStream.Seek(0, SeekOrigin.Begin);
+                    wtmain.Write(WriteInt64BE(end21));
+                    wtmain.BaseStream.Seek(16, SeekOrigin.Begin);
+                    wtmain.Write(WriteInt32BE(off1[j][1]));
+                    wtmain.Write(WriteInt32BE(off1[j][2]));
+                }
+                else
+                {
+                    wtmain.Write(WriteInt32BE(off1[j][0]));
+                    wtmain.Write(WriteInt32BE(off1[j][1]));
+                    wtmain.Write(WriteInt32BE(off1[j][2]));
+                }
+            }
+            wtmain.Close();
+            Console.WriteLine("\n***********************************\n*Pack Done!!. Continue............*\n***********************************");
         }
 
         public static void Copy(string inputFilePath, string outputFilePath)
