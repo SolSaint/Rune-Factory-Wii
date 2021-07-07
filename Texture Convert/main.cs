@@ -141,44 +141,21 @@ namespace Texture_Convert
         {
             var rd = new BinaryReader(new FileStream(dirpath.Text, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
             rd.BaseStream.Seek(pos, SeekOrigin.Begin);
-            var ms = new BinaryReader(new MemoryStream(rd.ReadBytes(len)));
+            byte[] input = rd.ReadBytes(len);
+            var ms = new BinaryReader(new MemoryStream(input));
             int c = 0;
             long k = 0;
             switch (typeTexture)
             {
                 case Type.RGBA16p2:
-                    wt.Write(RGBA4444);
-                    for (int i = 0; i < height; i++)
+                    wt.Write(RGBA32);
+                    byte[] output = Rotation(input, typeTexture, width / 8, height / 8, 4, 8);
+                    foreach(byte a in output)
                     {
-                        for (int j = 0; j <= width/8; j++)
-                        {
-                            if (j == width/8)
-                            {
-                                if (c < 7)
-                                {
-                                    c++;
-                                    ms.BaseStream.Seek(c * 4 + k, SeekOrigin.Begin);
-                                }
-                                else
-                                {
-                                    k = ms.BaseStream.Position - 28;
-                                    ms.BaseStream.Seek(k, SeekOrigin.Begin);
-                                    c = 0;
-                                }
-                            }
-                            else
-                            {
-                                for(int n = 0; n < 4; n++)
-                                {
-                                    string byte_type = ms.ReadByte().ToString("X2");
-                                    byte bit_a = byte.Parse($"{byte_type[0]}{byte_type[0]}", System.Globalization.NumberStyles.HexNumber);
-                                    byte bit_b = byte.Parse($"{byte_type[1]}{byte_type[1]}", System.Globalization.NumberStyles.HexNumber);
-                                    wt.Write(new byte[] { bit_a, bit_a, bit_b, bit_b });
-                                }
-                                Debug.WriteLine(ms.BaseStream.Position);
-                                ms.BaseStream.Seek(28, SeekOrigin.Current);
-                            }
-                        }
+                        string byte_type = a.ToString("X2");
+                        byte bit_a = byte.Parse($"{byte_type[0]}{byte_type[0]}", System.Globalization.NumberStyles.HexNumber);
+                        byte bit_b = byte.Parse($"{byte_type[1]}{byte_type[1]}", System.Globalization.NumberStyles.HexNumber);
+                        wt.Write(new byte[] { bit_a, bit_a, bit_a, bit_a, bit_b, bit_b, bit_b, bit_b });
                     }
                     wt.BaseStream.Seek(12, SeekOrigin.Begin);
                     wt.Write(height);
@@ -291,7 +268,6 @@ namespace Texture_Convert
                     wt.Write(height);
                     wt.Write(width);
                     break;
-                    break;
             }
         }
 
@@ -310,7 +286,20 @@ namespace Texture_Convert
 
         private void btnImport_Click(object sender, EventArgs e)
         {
-
+            opf.Filter = "DirectDraw Surface Image|*.dds";
+            if(opf.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrEmpty(opf.FileName))
+                {
+                    BinaryReader rd = new BinaryReader(File.OpenRead(opf.FileName));
+                    rd.BaseStream.Seek(128, SeekOrigin.Begin);
+                    BinaryWriter wt = new BinaryWriter(new FileStream(dirpath.Text, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite));
+                    wt.BaseStream.Seek(textureInfos[listTex.SelectedIndex].position, SeekOrigin.Begin);
+                    wt.Write(Rotation(rd, typeTexture, textureInfos[listTex.SelectedIndex].width, textureInfos[listTex.SelectedIndex].height, textureInfos[listTex.SelectedIndex].Length));
+                    wt.Close();
+                    rd.Close();
+                }
+            }
         }
 
 
@@ -336,5 +325,78 @@ namespace Texture_Convert
                 0xE0, 0x03, 0x00, 0x00, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 };
+
+
+        public byte[] RGBA32 = {
+                0x44, 0x44, 0x53, 0x20, 0x7C, 0x00, 0x00, 0x00, 0x0F, 0x10, 0x02, 0x00, 0x00, 0x02, 0x00, 0x00,
+                0x00, 0x02, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00,
+                0x41, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00,
+                0x00, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x10, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+                };
+
+
+        private byte[] Rotation(BinaryReader buffer, Type texType, int width, int height, int length)
+        {
+            byte[] newData = new byte[length];
+            byte[] rotateData = new byte[length];
+            int i = 0;
+            switch (texType)
+            {
+                case Type.RGBA16p2:
+                    while(buffer.BaseStream.Length > buffer.BaseStream.Position)
+                    {
+                        byte[] bf = buffer.ReadBytes(8);
+                        string byte_a = bf[0].ToString("X2");
+                        string byte_b = bf[4].ToString("X2");
+                        byte join = byte.Parse($"{byte_a[0]}{byte_b[0]}", System.Globalization.NumberStyles.HexNumber);
+                        newData[i++] = join;
+                    }
+                    int parts = height / 8;
+                    int stripes = width / 8;
+                    int colors = 4;
+                    int blocks = 8;
+                    int c = 0;
+                    for (int part = 0; part < parts; part++)
+                    {
+                        for (int block = 0; block < blocks; block++)
+                        {
+                            for (int stripe = 0; stripe < stripes; stripe++)
+                            {
+                                for (int color = 0; color < colors; color++)
+                                {
+                                    rotateData[part * colors * stripes * blocks + block * colors + stripe * stripes + color] = newData[c++];
+                                }
+                            }
+                        }
+
+                    }
+                    break;
+            }
+            return rotateData;
+        }
+
+        private byte[] Rotation(byte[] buffer, Type texType, int parts, int stripes, int colors, int blocks)
+        {
+            byte[] rotateData = new byte[buffer.Length];
+            int i = 0;
+            for (int part = 0; part < parts; part++)
+            {
+                for (int block = 0; block < blocks; block++)
+                {
+                    for (int stripe = 0; stripe < stripes; stripe++)
+                    {
+                        for (int color = 0; color < colors; color++)
+                        {
+                            rotateData[i++] = buffer[part * colors * stripes * blocks + block * colors + stripe * stripes + color];
+                        }
+                    }
+                }
+            }
+            return rotateData;
+        }
     }
 }
